@@ -1,0 +1,19 @@
+{
+  "name": "quote_practice_backend",
+  "version": "1.0.0",
+  "description": "This app integrates with the Forismatic API to retrieve random quotes for display. The Forismatic API provides a collection of inspirational quotes that you can fetch programmatically.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xbry12/quote-app-backend.git"
+  },
+  "author": "Bryant Pyram",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/xbry12/quote-app-backend/issues"
+  },
+  "homepage": "https://github.com/xbry12/quote-app-backend#readme"
+}
