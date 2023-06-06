@@ -1,24 +1,40 @@
-const fetch = require("node-fetch");
+const express = require("express");
+const fetch = require("isomorphic-fetch");
 
-// Function to fetch a random quote from the Forismatic API
-function fetchRandomQuote() {
-  const apiUrl =
-    "http://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en";
+const app = express();
+const PORT = 3000;
 
-  fetch(apiUrl)
-    .then((response) => response.json())
-    .then((data) => {
-      const quoteText = data.quoteText;
-      const quoteAuthor = data.quoteAuthor;
+app.get("/", (req, res) => {
+  fetch(
+    "http://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en"
+  )
+    .then((response) => response.text())
+    .then((text) => {
+      console.log("Response text:", text);
 
-      // Display the quote or perform any desired operations
-      console.log(quoteText);
-      console.log(quoteAuthor);
+      try {
+        const data = JSON.parse(text);
+
+        const quoteText = data.quoteText;
+        const quoteAuthor = data.quoteAuthor;
+
+        const quote = {
+          text: quoteText,
+          author: quoteAuthor,
+        };
+
+        res.json(quote);
+      } catch (error) {
+        console.error("Error parsing JSON:", error);
+        res.status(500).json({ error: "Failed to fetch quote" });
+      }
     })
     .catch((error) => {
       console.error("Error fetching quote:", error);
+      res.status(500).json({ error: "Failed to fetch quote" });
     });
-}
+});
 
-// Call the function to fetch a random quote
-fetchRandomQuote();
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
