@@ -1,6 +1,6 @@
-const express = require("express");
-const swaggerJsDoc = require("swagger-jsdoc");
-const swaggerUi = require("swagger-ui-express");
+import express from "express";
+import swaggerJsDoc from "swagger-jsdoc";
+import swaggerUi from "swagger-ui-express";
 
 const app = express();
 
@@ -13,8 +13,23 @@ const swaggerOptions = {
       version: "1.0.0",
       description: "API for retrieving quotes",
     },
+    components: {
+      schemas: {
+        Quote: {
+          type: "object",
+          properties: {
+            text: {
+              type: "string",
+            },
+            author: {
+              type: "string",
+            },
+          },
+        },
+      },
+    },
   },
-  apis: ["./app.js"], // Path to your main API file
+  apis: ["./app.mjs"], // Path to your main API file
 };
 
 const swaggerSpec = swaggerJsDoc(swaggerOptions);

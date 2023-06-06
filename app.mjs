@@ -1,11 +1,10 @@
-const express = require("express");
-const fetch = require("isomorphic-fetch");
-const { FetchError } = require("node-fetch"); // Import FetchError
+import express from "express";
+import fetch from "isomorphic-fetch";
+import { FetchError } from "node-fetch"; // Import FetchError
+import winston from "winston";
 
 const app = express();
-const PORT = 3000;
-
-const winston = require("winston");
+const PORT = 4000;
 
 // Create a logger instance
 const logger = winston.createLogger({
@@ -32,10 +31,6 @@ const logger = winston.createLogger({
  *               $ref: '#/components/schemas/Quote'
  */
 app.get("/quote", (req, res) => {
-  // Code to retrieve a quote
-});
-
-app.get("/", (req, res) => {
   fetch(
     "http://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en"
   )
@@ -78,5 +73,5 @@ app.get("/", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server is running on http://localhost:${PORT}/quote`);
 });
