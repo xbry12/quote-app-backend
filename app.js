@@ -1,37 +1,61 @@
 const express = require("express");
 const fetch = require("isomorphic-fetch");
+const { FetchError } = require("node-fetch"); // Import FetchError
 
 const app = express();
 const PORT = 3000;
+
+const winston = require("winston");
+
+// Create a logger instance
+const logger = winston.createLogger({
+  level: "error",
+  format: winston.format.simple(),
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({ filename: "error.log" }),
+  ],
+});
 
 app.get("/", (req, res) => {
   fetch(
     "http://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en"
   )
-    .then((response) => response.text())
-    .then((text) => {
-      console.log("Response text:", text);
+    .then((response) => {
+      if (!response.ok) {
+        if (response.status >= 500) {
+          throw new Error("API Error: Internal Server Error");
+        } else if (response.status >= 400) {
+          throw new Error("API Error: Bad Request");
+        } else {
+          throw new Error("API Error");
+        }
+      }
+      return response.json();
+    })
+    .then((data) => {
+      const quoteText = data.quoteText;
+      const quoteAuthor = data.quoteAuthor;
 
-      try {
-        const data = JSON.parse(text);
+      const quote = {
+        text: quoteText,
+        author: quoteAuthor,
+      };
 
-        const quoteText = data.quoteText;
-        const quoteAuthor = data.quoteAuthor;
-
-        const quote = {
-          text: quoteText,
-          author: quoteAuthor,
-        };
-
-        res.json(quote);
-      } catch (error) {
-        console.error("Error parsing JSON:", error);
-        res.status(500).json({ error: "Failed to fetch quote" });
+      res.json(quote);
+    })
+    .catch((error) => {
+      if (error instanceof FetchError) {
+        logger.error("Network Error:", error);
+        res.status(500).json({ error: "Network Error" });
+      } else {
+        logger.error("Error fetching quote:", error);
+        throw error; // Propagate the error to the next error handler
       }
     })
     .catch((error) => {
-      console.error("Error fetching quote:", error);
-      res.status(500).json({ error: "Failed to fetch quote" });
+      logger.error("Unhandled error:", error);
+      res.status(500).json({ error: error.message }); // Handle the propagated error
     });
 });
 
