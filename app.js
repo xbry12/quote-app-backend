@@ -17,6 +17,24 @@ const logger = winston.createLogger({
   ],
 });
 
+/**
+ * @swagger
+ * /quote:
+ *   get:
+ *     summary: Retrieve a random quote
+ *     description: Retrieve a random quote from the API
+ *     responses:
+ *       200:
+ *         description: Successful response with the quote
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Quote'
+ */
+app.get("/quote", (req, res) => {
+  // Code to retrieve a quote
+});
+
 app.get("/", (req, res) => {
   fetch(
     "http://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en"
